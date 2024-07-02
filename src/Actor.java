@@ -1,4 +1,5 @@
 public class Actor extends Person{
-
-    private Role role = Role.ACTOR;
+    public Actor(int id, String name) {
+        super(id, name, Role.ACTOR);
+    }
 }

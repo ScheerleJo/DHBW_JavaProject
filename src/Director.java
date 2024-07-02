@@ -1,5 +1,5 @@
 public class Director extends Person {
-
-    private Role role = Role.DIRECTOR;
-
+    public Director(int id,String name) {
+        super(id, name, Role.DIRECTOR);
+    }
 }
