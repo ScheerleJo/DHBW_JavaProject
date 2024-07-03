@@ -1,16 +1,21 @@
+import Data.Actor;
+import Data.DB;
+import Data.Director;
+import Data.Movie;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class DBhelper {
+public class DBHelper {
     private static final String dbPath = System.getProperty("user.dir") + "\\movieproject2024.db";
     private int entityCount = 0;
 
 
     public void importDB(DB db) throws IOException {
-        //Scheme for Importing from file [Actor,Movie,Director,ActorInMovie,DirectorInMovie];
+        //Scheme for Importing from file [Data.Actor,Data.Movie,Data.Director,ActorInMovie,DirectorInMovie];
 
         File file = new File(dbPath);
         if(!(file.exists() && file.canRead())) {
@@ -42,7 +47,7 @@ public class DBhelper {
             return;
         }
         String[] data = trimLine(line);
-        Map<Integer,List<Integer>> map = null;
+        Map<Integer,List<Integer>> map;
         switch (entityCount) {
             case 1:
                 actorCount++;
@@ -96,6 +101,15 @@ public class DBhelper {
             return null;
         }
    }
+   private Director enterDirectorInput(String[] data) {
+       try {
+           int id = Integer.parseInt(data[0]);
+           return new Director(id, data[1]);
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+       return null;
+   }
    private Movie enterMovieInput(String[] data) {
         try {
             if(data[1].isEmpty() || data[2].isEmpty() || data[4].isEmpty()) return null;
@@ -109,27 +123,38 @@ public class DBhelper {
             return null;
         }
    }
-   private Director enterDirectorInput(String[] data) {
-        try {
-            int id = Integer.parseInt(data[0]);
-            return new Director(id, data[1]);
-        } catch(Exception e) { e.printStackTrace(); }
-        return null;
-   }
 
-    private <T> Map<Integer,List<Integer>> addItemToIdMap(String[] data, Map<Integer,List<Integer>> hashMap, List<T> list, Function<T,Integer> getId) {
+
+    /**
+     * Adds the person to the map of persons in movies
+     * @param data the data to be added
+     * @param map the map to add the data to
+     * @param list the list to search for the movie
+     * @param getId the function to get the id of the element
+     * @param <T> the type of the element
+     * @return the updated map
+     */
+    private <T> Map<Integer,List<Integer>>addItemToIdMap(String[] data, Map<Integer,List<Integer>> map, List<T> list, Function<T,Integer> getId) {
         if (data[0].isEmpty()|| data[1].isEmpty()) return null;
         int personID = Integer.parseInt(data[0]);
         int movieID = Integer.parseInt(data[1]);
-        if(getElementById(movieID, list, getId) == null) return null;
-
-        List<Integer> personIds = hashMap.get(movieID);
-        if(personIds == null) personIds = new ArrayList<>();
-        if(!personIds.contains(personID)) personIds.add(personID);
-        hashMap.put(movieID, personIds);
-        return hashMap;
+        if(getElementById(movieID, list, getId) != null){
+            List<Integer> personIds = map.get(movieID);
+            if(personIds == null) personIds = new ArrayList<>();
+            if(!personIds.contains(personID)) personIds.add(personID);
+            map.put(movieID, personIds);
+        }
+        return map;
    }
 
+    /**
+     * Returns the element with the specified id from the list
+     * @param id the id of the element to be returned
+     * @param list the list to search in
+     * @param getId the function to get the id of the element
+     * @return the element with the specified id or null if not found
+     * @param <T> the type of the element
+     */
    public <T> T getElementById(int id, List<T> list, Function<T, Integer> getId) {
        T result = null;
        for (T object : list) {

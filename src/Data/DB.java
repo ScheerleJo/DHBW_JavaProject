@@ -1,3 +1,5 @@
+package Data;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +11,7 @@ public class DB {
     private List<Movie> movies = new ArrayList<>();
 
 
-    // Movie-ID as Key for Map and List of Actor-IDs/Director-IDs as Value
+    // Data.Movie-ID as Key for Map and List of Data.Actor-IDs/Data.Director-IDs as Value
     private Map<Integer,List<Integer>> ActorsInMovies = new HashMap<>();
     private Map<Integer,List<Integer>> DirectorsInMovies = new HashMap<>();
 

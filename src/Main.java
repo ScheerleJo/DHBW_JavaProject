@@ -1,10 +1,15 @@
+import Data.Actor;
+import Data.DB;
+import Data.Director;
+import Data.Movie;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        DBhelper loadDB = new DBhelper();
+        DBHelper loadDB = new DBHelper();
         DB db = new DB();
 
         loadDB.importDB(db);
