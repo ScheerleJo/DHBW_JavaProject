@@ -186,12 +186,13 @@ public class DBHelper {
 
    /**
     * Creates the Output-String with the list of persons
-    * @param persons the list of persons to be output
+    * @param list the List of Elements, to get the Name from
     * @param getName the function to get the name of the person
     * @param <T> the type of the person
     * @return the output string
     */
    public <T> String createOutputString(List<T> list, Function<T, String> getName) {
+
        StringBuilder sb = new StringBuilder();
        for(T item : list) {
            sb.append(getName.apply(item));
@@ -199,4 +200,33 @@ public class DBHelper {
        }
        return sb.toString();
    }
+
+    public String createMovieOutput(String[] args, DB db) {
+        List<Movie> movies = getElementsByName(args[1], db.getMovies(), Movie::getTitle);
+        StringBuilder sb = new StringBuilder();
+        for(Movie item : movies) {
+            //Append Details if existent (Title, ID, Genre, publishingDate, Rating, Votes)
+            sb.append(item.getId());
+            if(movies.indexOf(item) != movies.size() - 1) sb.append(", ");
+        }
+
+       return sb.toString();
+    }
+
+    public String createActorOutput(String[] args, DB db) {
+        List<Actor> list = getElementsByName(args[1], db.getActors(), Actor::getName);
+        StringBuilder sb = new StringBuilder();
+        for(Actor item : list) {
+            sb.append(item.getId()).append(" ").append(item.getName());
+            if(list.indexOf(item) != list.size() - 1) sb.append(", ");
+        }
+        return sb.toString();
+    }
+
+    public String createMovieNetworkOutput(List<Movie> movies) {
+        return "";
+    }
+    public String createActorNetworkOutput(List<Movie> movies) {
+       return "";
+    }
 }

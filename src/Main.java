@@ -30,14 +30,8 @@ public class Main {
 
     private static void handleAction(String[] args, DBHelper dbHelper, DB db) {
         switch (args[0]){
-            case "--filmsuche":
-                List<Movie> movies = dbHelper.getElementsByName(args[1], db.getMovies(), Movie::getTitle);
-                System.out.println("Filme: " + dbHelper.createOutputString(movies, Movie::getTitle));
-                break;
-            case "--schauspielersuche":
-                List<Actor> actors = dbHelper.getElementsByName(args[1], db.getActors(), Actor::getName);
-                System.out.println("Schauspieler: " + dbHelper.createOutputString(actors, Actor::getName));
-                break;
+            case "--filmsuche": System.out.println("Filme: " + dbHelper.createMovieOutput(args, db)); break;
+            case "--schauspielersuche": System.out.println("Schauspieler: " + dbHelper.createActorOutput(args, db)); break;
             case "--filmnetzwerk":
                 System.out.println("Filmnetzwerk"); //Placeholder
                 break;
