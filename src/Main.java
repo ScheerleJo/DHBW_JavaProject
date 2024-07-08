@@ -10,9 +10,8 @@ import java.util.Map;
 public class Main {
     public static void main(String[] args) throws IOException {
         DBHelper loadDB = new DBHelper();
-        DB db = new DB();
+        DB db = loadDB.importDB();
 
-        loadDB.importDB(db);
         System.out.println("Imported");
         List<Actor> actors = db.getActors();
         List<Movie> movies = db.getMovies();
@@ -24,18 +23,20 @@ public class Main {
         if(args.length == 0) {
             System.out.println("No Parameter Specified");
         } else {
-
-            //handleAction(args);
+            String[] search = args[0].split("=");
+            handleAction(search, loadDB, db);
         }
     }
 
-    private static void handleAction(String[] args) {
+    private static void handleAction(String[] args, DBHelper dbHelper, DB db) {
         switch (args[0]){
             case "--filmsuche":
-                System.out.println("Film Suche"); //Placeholder
+                List<Movie> movies = dbHelper.getElementsByName(args[1], db.getMovies(), Movie::getTitle);
+                System.out.println("Filme: " + dbHelper.createOutputString(movies, Movie::getTitle));
                 break;
             case "--schauspielersuche":
-                System.out.println("Schauspieler Suche");//Placeholder
+                List<Actor> actors = dbHelper.getElementsByName(args[1], db.getActors(), Actor::getName);
+                System.out.println("Schauspieler: " + dbHelper.createOutputString(actors, Actor::getName));
                 break;
             case "--filmnetzwerk":
                 System.out.println("Filmnetzwerk"); //Placeholder

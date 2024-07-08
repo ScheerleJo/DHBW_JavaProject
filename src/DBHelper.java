@@ -13,8 +13,13 @@ public class DBHelper {
     private static final String dbPath = System.getProperty("user.dir") + "\\movieproject2024.db";
     private int entityCount = 0;
 
-
-    public void importDB(DB db) throws IOException {
+    /**
+     * Reads the local file and imports it into the DB
+     * @return the database with all imported data
+     * @throws IOException if file is not found or could not be opened
+     */
+    public DB importDB() throws IOException {
+        DB db = new DB();
         //Scheme for Importing from file [Data.Actor,Data.Movie,Data.Director,ActorInMovie,DirectorInMovie];
 
         File file = new File(dbPath);
@@ -39,6 +44,7 @@ public class DBHelper {
         System.out.println("DirectorCount: " + directorCount);
         System.out.println("ActorMovieRelation: " + actorMovieRelation);
         System.out.println("DirectorMovieRelation: " + directorMovieRelation);
+        return db;
     }
     int actorCount, directorCount, movieCount, actorMovieRelation, directorMovieRelation;
     private void handleLine(String line, DB db) {
@@ -50,31 +56,25 @@ public class DBHelper {
         Map<Integer,List<Integer>> map;
         switch (entityCount) {
             case 1:
-                actorCount++;
-                List<Actor> actorList = db.getActors();
                 Actor actor = enterActorInput(data);
                 if(actor == null ) break;
-                if(getElementById(actor.getId(), actorList, Actor::getId) == null) db.addActor(actor);
+                if(getElementById(actor.getId(), db.getActors(), Actor::getId) == null) db.addActor(actor);
                 break;
             case 2:
-                movieCount++;
                 Movie movie = enterMovieInput(data);
                 if(movie == null ) break;
                 if(getElementById(movie.getId(), db.getMovies(), Movie::getId) == null) db.addMovie(movie);
                 break;
             case 3:
-                directorCount++;
                 Director director = enterDirectorInput(data);
                 if(director == null) break;
                 if(getElementById(director.getId(), db.getDirectors(), Director::getId) == null) db.addDirector(director);
                 break;
             case 4:
-                actorMovieRelation++;
                 map = addItemToIdMap(data, db.getActorsInMovies(), db.getMovies(), Movie::getId);
                 if(map != null) db.setActorsInMovies(map);
                 break;
             case 5:
-                directorMovieRelation++;
                 map = addItemToIdMap(data, db.getDirectorsInMovies(), db.getMovies(), Movie::getId);
                 if(map != null) db.setDirectorsInMovies(map);
                 break;
@@ -110,6 +110,12 @@ public class DBHelper {
        }
        return null;
    }
+
+    /**
+     * Creates a new movie object from the data provided in the array
+     * @param data data of the current line in the db-file
+     * @return the movie object created from the data
+     */
    private Movie enterMovieInput(String[] data) {
         try {
             if(data[1].isEmpty() || data[2].isEmpty() || data[4].isEmpty()) return null;
@@ -123,7 +129,6 @@ public class DBHelper {
             return null;
         }
    }
-
 
     /**
      * Adds the person to the map of persons in movies
@@ -157,9 +162,41 @@ public class DBHelper {
      */
    public <T> T getElementById(int id, List<T> list, Function<T, Integer> getId) {
        T result = null;
-       for (T object : list) {
-           if(getId.apply(object).equals(id)) result = object;
+       for (T item : list) {
+           if(getId.apply(item).equals(id)) result = item;
        }
        return result;
+   }
+
+    /**
+     * Returns a list of elements with the specified name
+     * @param name the name to search for
+     * @param list the list to search in
+     * @param getName the function to get the name of the element
+     * @return the list of elements with the specified name
+     * @param <T> the type of the element
+     */
+   public <T> List<T> getElementsByName(String name, List<T> list, Function<T, String> getName){
+       List<T> result = new ArrayList<>();
+       for(T item : list) {
+           if(getName.apply(item).contains(name)) result.add(item);
+       }
+       return result;
+   }
+
+   /**
+    * Creates the Output-String with the list of persons
+    * @param persons the list of persons to be output
+    * @param getName the function to get the name of the person
+    * @param <T> the type of the person
+    * @return the output string
+    */
+   public <T> String createOutputString(List<T> list, Function<T, String> getName) {
+       StringBuilder sb = new StringBuilder();
+       for(T item : list) {
+           sb.append(getName.apply(item));
+           if(list.indexOf(item) != list.size() - 1) sb.append(", ");
+       }
+       return sb.toString();
    }
 }
