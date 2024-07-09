@@ -1,13 +1,17 @@
-import Data.Actor;
-import Data.DB;
-import Data.Director;
-import Data.Movie;
+package dbhw.Helper;
+
+import dbhw.Data.Actor;
+import dbhw.Data.DB;
+import dbhw.Data.Director;
+import dbhw.Data.Movie;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+
+import static java.lang.Integer.parseInt;
 
 public class DBHelper {
     private static final String dbPath = System.getProperty("user.dir") + "\\movieproject2024.db";
@@ -20,7 +24,7 @@ public class DBHelper {
      */
     public DB importDB() throws IOException {
         DB db = new DB();
-        //Scheme for Importing from file [Data.Actor,Data.Movie,Data.Director,ActorInMovie,DirectorInMovie];
+        //Scheme for Importing from file [dbhw.Data.Actor,dbhw.Data.Movie,dbhw.Data.Director,ActorInMovie,DirectorInMovie];
 
         File file = new File(dbPath);
         if(!(file.exists() && file.canRead())) {
@@ -39,14 +43,14 @@ public class DBHelper {
                 if(br != null)br.close();
             }catch(Exception e) {e.printStackTrace();}
         }
-        System.out.println("ActorCount: " + actorCount);
-        System.out.println("MovieCount: " + movieCount);
-        System.out.println("DirectorCount: " + directorCount);
-        System.out.println("ActorMovieRelation: " + actorMovieRelation);
-        System.out.println("DirectorMovieRelation: " + directorMovieRelation);
         return db;
     }
-    int actorCount, directorCount, movieCount, actorMovieRelation, directorMovieRelation;
+
+    /**
+     * Handles the line and adds the data to the database
+     * @param line the line to be handled
+     * @param db the database to add the data to
+     */
     private void handleLine(String line, DB db) {
         if(line.startsWith("New_Entity:")){
             entityCount++;
@@ -73,6 +77,9 @@ public class DBHelper {
             case 4:
                 map = addItemToIdMap(data, db.getActorsInMovies(), db.getMovies(), Movie::getId);
                 if(map != null) db.setActorsInMovies(map);
+                data = new String[]{data[1], data[0]};
+                map = addItemToIdMap(data, db.getMoviesFromActors(), db.getActors(), Actor::getId);
+                if(map != null) db.setMoviesFromActors(map);
                 break;
             case 5:
                 map = addItemToIdMap(data, db.getDirectorsInMovies(), db.getMovies(), Movie::getId);
@@ -82,7 +89,12 @@ public class DBHelper {
         }
     }
 
-    private String[] trimLine(String line) {
+    /**
+     * Splits the String with "," delimiter into an array and Trims excess Spaces and Quotes
+     * @param line the line to be split and trimmed
+     * @return the trimmed line as an array
+     */
+    public String[] trimLine(String line) {
         String[] data = line.split("\",\"");
         data[0] = data[0].replaceAll("\"", "");
         data[data.length - 1] = data[data.length - 1].replaceAll("\"", "");
@@ -92,18 +104,29 @@ public class DBHelper {
         return data;
    }
 
-   private Actor enterActorInput(String[] data) {
+   /**
+    * Creates a new actor object from the data provided in the array
+    * @param data data of the current line in the db-file
+    * @return the actor object created from the data
+    */
+   public Actor enterActorInput(String[] data) {
         try{
-            int id = Integer.parseInt(data[0]);
+            int id = parseInt(data[0]);
             return new Actor(id, data[1]);
         } catch(Exception e) {
             e.printStackTrace();
             return null;
         }
    }
-   private Director enterDirectorInput(String[] data) {
+
+    /**
+     * Creates a new director object from the data provided in the array
+     * @param data data of the current line in the db-file
+     * @return the director object created from the data
+     */
+   public Director enterDirectorInput(String[] data) {
        try {
-           int id = Integer.parseInt(data[0]);
+           int id = parseInt(data[0]);
            return new Director(id, data[1]);
        } catch (Exception e) {
            e.printStackTrace();
@@ -116,12 +139,12 @@ public class DBHelper {
      * @param data data of the current line in the db-file
      * @return the movie object created from the data
      */
-   private Movie enterMovieInput(String[] data) {
+   public Movie enterMovieInput(String[] data) {
         try {
             if(data[1].isEmpty() || data[2].isEmpty() || data[4].isEmpty()) return null;
 
-            int id = !data[0].isEmpty() ? Integer.parseInt(data[0]) :-1;
-            int votes = !data[5].isEmpty() ? Integer.parseInt(data[5]) : -1;
+            int id = !data[0].isEmpty() ? parseInt(data[0]) :-1;
+            int votes = !data[5].isEmpty() ? parseInt(data[5]) : -1;
             double rating = !data[6].isEmpty() ? Double.parseDouble(data[6]) : -1.0;
             return new Movie(id, data[1],data[2], data[3], data[4],votes, rating);
         } catch(Exception e) {
@@ -139,15 +162,15 @@ public class DBHelper {
      * @param <T> the type of the element
      * @return the updated map
      */
-    private <T> Map<Integer,List<Integer>>addItemToIdMap(String[] data, Map<Integer,List<Integer>> map, List<T> list, Function<T,Integer> getId) {
+    public <T> Map<Integer,List<Integer>>addItemToIdMap(String[] data, Map<Integer,List<Integer>> map, List<T> list, Function<T,Integer> getId) {
         if (data[0].isEmpty()|| data[1].isEmpty()) return null;
-        int personID = Integer.parseInt(data[0]);
-        int movieID = Integer.parseInt(data[1]);
-        if(getElementById(movieID, list, getId) != null){
-            List<Integer> personIds = map.get(movieID);
-            if(personIds == null) personIds = new ArrayList<>();
-            if(!personIds.contains(personID)) personIds.add(personID);
-            map.put(movieID, personIds);
+        int valueID = parseInt(data[0]);
+        int keyID = parseInt(data[1]);
+        if(getElementById(keyID, list, getId) != null){
+            List<Integer> valueIDs = map.get(keyID);
+            if(valueIDs == null) valueIDs = new ArrayList<>();
+            if(!valueIDs.contains(valueID)) valueIDs.add(valueID);
+            map.put(keyID, valueIDs);
         }
         return map;
    }
@@ -179,54 +202,11 @@ public class DBHelper {
    public <T> List<T> getElementsByName(String name, List<T> list, Function<T, String> getName){
        List<T> result = new ArrayList<>();
        for(T item : list) {
-           if(getName.apply(item).contains(name)) result.add(item);
+           if(getName.apply(item).contains(name)) {
+               result.add(item);
+           }
        }
+       if(result.isEmpty()) return null;
        return result;
    }
-
-   /**
-    * Creates the Output-String with the list of persons
-    * @param list the List of Elements, to get the Name from
-    * @param getName the function to get the name of the person
-    * @param <T> the type of the person
-    * @return the output string
-    */
-   public <T> String createOutputString(List<T> list, Function<T, String> getName) {
-
-       StringBuilder sb = new StringBuilder();
-       for(T item : list) {
-           sb.append(getName.apply(item));
-           if(list.indexOf(item) != list.size() - 1) sb.append(", ");
-       }
-       return sb.toString();
-   }
-
-    public String createMovieOutput(String[] args, DB db) {
-        List<Movie> movies = getElementsByName(args[1], db.getMovies(), Movie::getTitle);
-        StringBuilder sb = new StringBuilder();
-        for(Movie item : movies) {
-            //Append Details if existent (Title, ID, Genre, publishingDate, Rating, Votes)
-            sb.append(item.getId());
-            if(movies.indexOf(item) != movies.size() - 1) sb.append(", ");
-        }
-
-       return sb.toString();
-    }
-
-    public String createActorOutput(String[] args, DB db) {
-        List<Actor> list = getElementsByName(args[1], db.getActors(), Actor::getName);
-        StringBuilder sb = new StringBuilder();
-        for(Actor item : list) {
-            sb.append(item.getId()).append(" ").append(item.getName());
-            if(list.indexOf(item) != list.size() - 1) sb.append(", ");
-        }
-        return sb.toString();
-    }
-
-    public String createMovieNetworkOutput(List<Movie> movies) {
-        return "";
-    }
-    public String createActorNetworkOutput(List<Movie> movies) {
-       return "";
-    }
 }

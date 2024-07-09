@@ -1,7 +1,4 @@
-package Data;
-
-import java.util.ArrayList;
-import java.util.List;
+package dbhw.Data;
 
 public class Movie {
     private int id;

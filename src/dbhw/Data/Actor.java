@@ -1,4 +1,4 @@
-package Data;
+package dbhw.Data;
 
 public class Actor extends Person{
     public Actor(int id, String name) {

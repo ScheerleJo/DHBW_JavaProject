@@ -1,4 +1,4 @@
-package Data;
+package dbhw.Data;
 
 public class Person {
     private int id;

@@ -1,4 +1,4 @@
-package Data;
+package dbhw.Data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,9 +11,11 @@ public class DB {
     private List<Movie> movies = new ArrayList<>();
 
 
-    // Data.Movie-ID as Key for Map and List of Data.Actor-IDs/Data.Director-IDs as Value
+    // dbhw.Data.Movie-ID as Key for Map and List of dbhw.Data.Actor-IDs/dbhw.Data.Director-IDs as Value
     private Map<Integer,List<Integer>> ActorsInMovies = new HashMap<>();
     private Map<Integer,List<Integer>> DirectorsInMovies = new HashMap<>();
+    //Actor ID as Key and Movies with that Actor in it as Value in List
+    private Map<Integer,List<Integer>> MoviesFromActors = new HashMap<>();
 
     public void setActors(List<Actor> actors) {
         this.actors = actors;
@@ -29,6 +31,9 @@ public class DB {
     }
     public void setDirectorsInMovies(Map<Integer, List<Integer>> DirectorsInMovies) {
         this.DirectorsInMovies = DirectorsInMovies;
+    }
+    public void setMoviesFromActors(Map<Integer, List<Integer>> MoviesFromActors) {
+        this.MoviesFromActors = MoviesFromActors;
     }
 
     public void addActor(Actor actor) {
@@ -55,5 +60,8 @@ public class DB {
     }
     public Map<Integer,List<Integer>> getDirectorsInMovies() {
         return DirectorsInMovies;
+    }
+    public Map<Integer,List<Integer>> getMoviesFromActors() {
+        return MoviesFromActors;
     }
 }
