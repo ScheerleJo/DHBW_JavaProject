@@ -75,14 +75,13 @@ public class DBOutput {
             for (Integer movieID : movieIDs){
                 Movie movie = dbHelper.getElementById(movieID, db.getMovies(), Movie::getId);
                 if(!movies.contains(movie)) movies.add(movie);
-                for(Integer actorID2 : actorsInMovies.get(movieID)){
-                    Actor actor2 = dbHelper.getElementById(actorID2, db.getActors(), Actor::getId);
-                    if(!actors.contains(actor2)) actors.add(actor2);
-                }
             }
         }
+        movies.remove(selectedMovie);
         //Build OutputString
-        return "Schauspieler: " + createOutputString(actors, Actor::getName) + "\nFilme: " + createOutputString(movies, Movie::getTitle);
+        String actorString = createOutputString(actors, Actor::getName);
+        String movieString = createOutputString(movies, Movie::getTitle);
+        return "Schauspieler: " + actorString + "\r\nFilme: " + movieString;
     }
 
     public String createActorNetworkOutput(String arg, DB db) {
@@ -103,12 +102,11 @@ public class DBOutput {
             for (Integer actorID : actorIDs){
                 Actor actor = dbHelper.getElementById(actorID, db.getActors(), Actor::getId);
                 if(!actors.contains(actor)) actors.add(actor);
-                for(Integer movieID2 : moviesFromActors.get(actorID)){
-                    Movie movie2 = dbHelper.getElementById(movieID2, db.getMovies(), Movie::getId);
-                    if(!movies.contains(movie2)) movies.add(movie2);
-                }
             }
         }
-        return "Filme: " + createOutputString(movies, Movie::getTitle) + "\nSchauspieler: " + createOutputString(actors, Actor::getName);
+        actors.remove(selectedActor);
+        String actorString = createOutputString(actors, Actor::getName);
+        String movieString = createOutputString(movies, Movie::getTitle);
+        return "Filme: " + movieString + "\r\nSchauspieler: " + actorString;
     }
 }

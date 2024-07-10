@@ -11,7 +11,7 @@ public class Main {
         DBHelper loadDB = new DBHelper();
         DB db = loadDB.importDB();
         System.out.println("Database imported successfully!");
-        args = new String[]{"--filmnetzwerk=2047"};
+        //args = new String[]{"--filmnetzwerk=2047"};
         String[] search = args[0].split("=");
         handleAction(search, db);
     }
@@ -21,8 +21,10 @@ public class Main {
         switch (args[0]){
             case "--filmsuche": System.out.println("Filme: " + output.createMovieOutput(args[1], db)); break;
             case "--schauspielersuche": System.out.println("Schauspieler: " + output.createActorOutput(args[1], db)); break;
-            case "--filmnetzwerk": System.out.println(output.createMovieNetworkOutput(args[1], db)); break;
-            case "--schauspielernetzwerk": System.out.println(output.createActorNetworkOutput(args[1], db)); break;
+            case "--filmnetzwerk":
+                System.out.println(output.createMovieNetworkOutput(args[1], db)); break;
+            case "--schauspielernetzwerk":
+                System.out.println(output.createActorNetworkOutput(args[1], db)); break;
             default: System.out.println("ungültiges Argument!"); break;
         }
     }
