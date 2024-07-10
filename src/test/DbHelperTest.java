@@ -1,9 +1,9 @@
 package test;
 
-import dbhw.Data.Actor;
-import dbhw.Data.Director;
-import dbhw.Data.Movie;
-import dbhw.Helper.DBHelper;
+import dhbw.Data.Actor;
+import dhbw.Data.Director;
+import dhbw.Data.Movie;
+import dhbw.Helper.DBHelper;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class DbHelperTest {
     @Test public void testTrimLine(){
         DBHelper dbHelper = new DBHelper();
         String input = "\"New_Entity: \",\"1  \"";
-        String[] data = dbHelper.trimLine(input);
+        String[] data = dbHelper.testtrimLine(input);
         assertEquals(2, data.length);
         assertEquals("New_Entity:", data[0]);
         assertEquals("1", data[1]);
@@ -39,7 +39,7 @@ public class DbHelperTest {
         DBHelper dbHelper = new DBHelper();
         String[] input = {"256", "New Actor"};
 
-        Actor actor = dbHelper.enterActorInput(input);
+        Actor actor = dbHelper.testenterActorInput(input);
 
         assertNotNull(actor);
         assertEquals("New Actor", actor.getName());
@@ -55,7 +55,7 @@ public class DbHelperTest {
         DBHelper dbHelper = new DBHelper();
         String[] input = {"256", "New Movie", "This is the plot", "Genre", "2024-07-03", "24", "5.7"};
 
-        Movie movie = dbHelper.enterMovieInput(input);
+        Movie movie = dbHelper.testenterMovieInput(input);
 
         assertNotNull(movie);
         assertEquals("New Movie", movie.getTitle());
@@ -75,7 +75,7 @@ public class DbHelperTest {
         DBHelper dbHelper = new DBHelper();
         String[] input = {"256", "New Director"};
 
-        Director director = dbHelper.enterDirectorInput(input);
+        Director director = dbHelper.testenterDirectorInput(input);
 
         assertNotNull(director);
         assertEquals("New Director", director.getName());
@@ -99,7 +99,7 @@ public class DbHelperTest {
         list.add(5);
         map.put(1, list);
 
-        dbHelper.addItemToIdMap(input, map, movies, Movie::getId);
+        dbHelper.testaddItemToIdMap(input, map, movies, Movie::getId);
 
         assertEquals(2, map.size());
         assertEquals(6, map.get(2).getFirst().intValue());

@@ -1,9 +1,9 @@
 package test;
 
-import dbhw.Data.Actor;
-import dbhw.Data.DB;
-import dbhw.Data.Movie;
-import dbhw.Helper.DBOutput;
+import dhbw.Data.Actor;
+import dhbw.Data.DB;
+import dhbw.Data.Movie;
+import dhbw.Helper.DBOutput;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -37,11 +37,11 @@ public class DbOutputTest {
      */
     @Test
     public void testCreateMovieOutput() {
-        DBOutput dbOutput = new DBOutput();
         DB db = new DB();
         db.addMovie(new Movie(1, "Movie1", "","Genre1", "2021-01-01", 1, 1.0));
+        DBOutput dbOutput = new DBOutput(db);
 
-        String output = dbOutput.createMovieOutput("Movie1", db);
+        String output = dbOutput.createMovieOutput("Movie1");
 
         assertEquals("1 Titel: Movie1 Genre: Genre1 Datum: 2021-01-01 Bewertung: 1.0", output);
     }
@@ -53,11 +53,11 @@ public class DbOutputTest {
      */
     @Test
     public void testCreateActorOutput() {
-        DBOutput dbOutput = new DBOutput();
         DB db = new DB();
         db.addActor(new Actor(1, "Actor1"));
+        DBOutput dbOutput = new DBOutput(db);
 
-        String output = dbOutput.createActorOutput("Actor1", db);
+        String output = dbOutput.createActorOutput("Actor1");
 
         assertEquals("1 Actor1", output);
     }
@@ -69,7 +69,6 @@ public class DbOutputTest {
      */
     @Test
     public void testCreateMovieNetworkOutput() {
-        DBOutput dbOutput = new DBOutput();
         DB db = new DB();
         db.addMovie(new Movie(100, "Movie1", "", "Genre1", "2021-01-01", 1, 1.0));
         db.addMovie(new Movie(101, "Movie2", "", "Genre2", "2021-01-02", 2, 2.0));
@@ -92,12 +91,13 @@ public class DbOutputTest {
         map.put(5, List.of(101));
         map.put(6, List.of(101));
         db.setMoviesFromActors(map);
+        DBOutput dbOutput = new DBOutput(db);
 
-        String output = dbOutput.createMovieNetworkOutput("100", db);
-        assertEquals("Schauspieler: Actor1, Actor2, Actor3, Actor5, Actor6\nFilme: Movie1, Movie2", output);
+        String output = dbOutput.createMovieNetworkOutput("100");
+        assertEquals("Schauspieler: Actor1, Actor2, Actor3\r\nFilme: Movie2", output);
 
-        output = dbOutput.createMovieNetworkOutput("101", db);
-        assertEquals("Schauspieler: Actor2, Actor1, Actor3, Actor5, Actor6\nFilme: Movie2, Movie1", output);
+        output = dbOutput.createMovieNetworkOutput("101");
+        assertEquals("Schauspieler: Actor2, Actor5, Actor6\r\nFilme: Movie1", output);
     }
 
     /**
@@ -107,7 +107,6 @@ public class DbOutputTest {
      */
     @Test
     public void testcreateActorNetworkOutput(){
-        DBOutput dbOutput = new DBOutput();
         DB db = new DB();
         db.addMovie(new Movie(100, "Movie1", "", "Genre1", "2021-01-01", 1, 1.0));
         db.addMovie(new Movie(101, "Movie2", "", "Genre2", "2021-01-02", 2, 2.0));
@@ -130,10 +129,11 @@ public class DbOutputTest {
         map.put(5, List.of(101));
         map.put(6, List.of(101));
         db.setMoviesFromActors(map);
+        DBOutput dbOutput = new DBOutput(db);
 
 
-        String output = dbOutput.createActorNetworkOutput("1", db);
-        assertEquals("Filme: Movie1, Movie2\nSchauspieler: Actor1, Actor2, Actor3", output);
+        String output = dbOutput.createActorNetworkOutput("1");
+        assertEquals("Filme: Movie1\r\nSchauspieler: Actor2, Actor3", output);
 
     }
 }

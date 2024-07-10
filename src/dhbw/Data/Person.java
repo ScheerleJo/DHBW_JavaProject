@@ -1,14 +1,13 @@
-package dbhw.Data;
+package dhbw.Data;
 
 public class Person {
     private int id;
     private String name;
-    private Role role;
 
-    public Person(int id, String name, Role role) {
+    public Person(int id, String name) {
         this.id = id;
         this.name = name;
-        this.role = role;
+
     }
 
     public void setId(int id) {
@@ -17,18 +16,12 @@ public class Person {
     public void setName(String name) {
         this.name = name;
     }
-    public void setRole(Role role) {
-        this.role = role;
-    }
 
     public int getId() {
         return id;
     }
     public String getName() {
         return name;
-    }
-    public Role getRole() {
-        return role;
     }
 
 }

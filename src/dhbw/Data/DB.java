@@ -1,4 +1,4 @@
-package dbhw.Data;
+package dhbw.Data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,12 +10,13 @@ public class DB {
     private List<Director> directors =new ArrayList<>();
     private List<Movie> movies = new ArrayList<>();
 
+    //Movie-ID as Key for Map and List of Actor-IDs/Director-IDs as Value
+    private Map<Integer,List<Integer>> actorsInMovies = new HashMap<>();
+    private Map<Integer,List<Integer>> directorsInMovies = new HashMap<>();
 
-    // dbhw.Data.Movie-ID as Key for Map and List of dbhw.Data.Actor-IDs/dbhw.Data.Director-IDs as Value
-    private Map<Integer,List<Integer>> ActorsInMovies = new HashMap<>();
-    private Map<Integer,List<Integer>> DirectorsInMovies = new HashMap<>();
     //Actor ID as Key and Movies with that Actor in it as Value in List
-    private Map<Integer,List<Integer>> MoviesFromActors = new HashMap<>();
+    private Map<Integer,List<Integer>> moviesFromActors = new HashMap<>();
+
 
     public void setActors(List<Actor> actors) {
         this.actors = actors;
@@ -27,13 +28,13 @@ public class DB {
         this.movies = movies;
     }
     public void setActorsInMovies(Map<Integer, List<Integer>> ActorsInMovies) {
-        this.ActorsInMovies = ActorsInMovies;
+        this.actorsInMovies = ActorsInMovies;
     }
     public void setDirectorsInMovies(Map<Integer, List<Integer>> DirectorsInMovies) {
-        this.DirectorsInMovies = DirectorsInMovies;
+        this.directorsInMovies = DirectorsInMovies;
     }
     public void setMoviesFromActors(Map<Integer, List<Integer>> MoviesFromActors) {
-        this.MoviesFromActors = MoviesFromActors;
+        this.moviesFromActors = MoviesFromActors;
     }
 
     public void addActor(Actor actor) {
@@ -56,12 +57,12 @@ public class DB {
         return movies;
     }
     public Map<Integer,List<Integer>> getActorsInMovies() {
-        return ActorsInMovies;
+        return actorsInMovies;
     }
     public Map<Integer,List<Integer>> getDirectorsInMovies() {
-        return DirectorsInMovies;
+        return directorsInMovies;
     }
     public Map<Integer,List<Integer>> getMoviesFromActors() {
-        return MoviesFromActors;
+        return moviesFromActors;
     }
 }

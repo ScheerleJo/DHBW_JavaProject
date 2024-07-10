@@ -1,9 +1,9 @@
 package test;
-import dbhw.Data.Actor;
-import dbhw.Data.DB;
+import dhbw.Data.Actor;
+import dhbw.Data.DB;
 
-import dbhw.Data.Director;
-import dbhw.Data.Movie;
+import dhbw.Data.Director;
+import dhbw.Data.Movie;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

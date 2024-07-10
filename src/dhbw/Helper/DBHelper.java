@@ -1,9 +1,9 @@
-package dbhw.Helper;
+package dhbw.Helper;
 
-import dbhw.Data.Actor;
-import dbhw.Data.DB;
-import dbhw.Data.Director;
-import dbhw.Data.Movie;
+import dhbw.Data.Actor;
+import dhbw.Data.DB;
+import dhbw.Data.Director;
+import dhbw.Data.Movie;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -24,24 +24,19 @@ public class DBHelper {
      */
     public DB importDB() throws IOException {
         DB db = new DB();
-        //Scheme for Importing from file [dbhw.Data.Actor,dbhw.Data.Movie,dbhw.Data.Director,ActorInMovie,DirectorInMovie];
 
         File file = new File(dbPath);
         if(!(file.exists() && file.canRead())) {
             throw new FileNotFoundException("File at location " + dbPath + " is unreadable or doesn't exist");
         }
 
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(dbPath));
+        try (BufferedReader br = new BufferedReader(new FileReader(dbPath))) {
             String line;
             while ((line = br.readLine()) != null) {
                 handleLine(line, db);
             }
-        } catch(Exception e) {e.printStackTrace();} finally {
-            try {
-                if(br != null)br.close();
-            }catch(Exception e) {e.printStackTrace();}
+        } catch (IOException e) {
+            throw new IOException("Something went wrong while reading a line");
         }
         return db;
     }
@@ -94,7 +89,7 @@ public class DBHelper {
      * @param line the line to be split and trimmed
      * @return the trimmed line as an array
      */
-    public String[] trimLine(String line) {
+    private String[] trimLine(String line) {
         String[] data = line.split("\",\"");
         data[0] = data[0].replaceAll("\"", "");
         data[data.length - 1] = data[data.length - 1].replaceAll("\"", "");
@@ -109,29 +104,31 @@ public class DBHelper {
     * @param data data of the current line in the db-file
     * @return the actor object created from the data
     */
-   public Actor enterActorInput(String[] data) {
+    private Actor enterActorInput(String[] data) {
         try{
             int id = parseInt(data[0]);
             return new Actor(id, data[1]);
-        } catch(Exception e) {
-            e.printStackTrace();
+        } catch(NumberFormatException e) {
+            throw new NumberFormatException("The id could not be parsed to Int\n" + e.getMessage());
+        } catch (Exception e) {
             return null;
         }
-   }
+    }
 
     /**
      * Creates a new director object from the data provided in the array
      * @param data data of the current line in the db-file
      * @return the director object created from the data
      */
-   public Director enterDirectorInput(String[] data) {
+    private Director enterDirectorInput(String[] data) {
        try {
            int id = parseInt(data[0]);
            return new Director(id, data[1]);
+       }  catch(NumberFormatException e) {
+           throw new NumberFormatException("The id could not be parsed to Int\n" + e.getMessage());
        } catch (Exception e) {
-           e.printStackTrace();
+           return null;
        }
-       return null;
    }
 
     /**
@@ -139,17 +136,16 @@ public class DBHelper {
      * @param data data of the current line in the db-file
      * @return the movie object created from the data
      */
-   public Movie enterMovieInput(String[] data) {
+    private Movie enterMovieInput(String[] data) {
         try {
-            if(data[1].isEmpty() || data[2].isEmpty() || data[4].isEmpty()) return null;
+            if(data[1].isEmpty() || data[2].isEmpty()) return null;
 
             int id = !data[0].isEmpty() ? parseInt(data[0]) :-1;
             int votes = !data[5].isEmpty() ? parseInt(data[5]) : -1;
             double rating = !data[6].isEmpty() ? Double.parseDouble(data[6]) : -1.0;
             return new Movie(id, data[1],data[2], data[3], data[4],votes, rating);
         } catch(Exception e) {
-            e.printStackTrace();
-            return null;
+            throw new IllegalArgumentException("Invalid Data for Movie");
         }
    }
 
@@ -162,7 +158,7 @@ public class DBHelper {
      * @param <T> the type of the element
      * @return the updated map
      */
-    public <T> Map<Integer,List<Integer>>addItemToIdMap(String[] data, Map<Integer,List<Integer>> map, List<T> list, Function<T,Integer> getId) {
+    private <T> Map<Integer,List<Integer>>addItemToIdMap(String[] data, Map<Integer,List<Integer>> map, List<T> list, Function<T,Integer> getId) {
         if (data[0].isEmpty()|| data[1].isEmpty()) return null;
         int valueID = parseInt(data[0]);
         int keyID = parseInt(data[1]);
@@ -183,10 +179,14 @@ public class DBHelper {
      * @return the element with the specified id or null if not found
      * @param <T> the type of the element
      */
-   public <T> T getElementById(int id, List<T> list, Function<T, Integer> getId) {
+    public <T> T getElementById(int id, List<T> list, Function<T, Integer> getId) {
        T result = null;
        for (T item : list) {
-           if(getId.apply(item).equals(id)) result = item;
+           try {
+               if (getId.apply(item).equals(id)) result = item;
+           } catch (NullPointerException e) {
+               throw new NullPointerException("Element with ID " + id + " not found in list");
+           }
        }
        return result;
    }
@@ -199,14 +199,31 @@ public class DBHelper {
      * @return the list of elements with the specified name
      * @param <T> the type of the element
      */
-   public <T> List<T> getElementsByName(String name, List<T> list, Function<T, String> getName){
+    public <T> List<T> getElementsByName(String name, List<T> list, Function<T, String> getName){
        List<T> result = new ArrayList<>();
        for(T item : list) {
-           if(getName.apply(item).contains(name)) {
-               result.add(item);
+           try {
+               if(getName.apply(item).contains(name)) result.add(item);
+           } catch (NullPointerException e) {
+               throw new NullPointerException("Element with Name " + name + " not found in list");
            }
        }
        if(result.isEmpty()) return null;
        return result;
    }
+
+
+
+
+
+    // Just for testing purposes - not part of the actual implementation
+    public String[] testtrimLine(String line) { return trimLine(line); }
+    public Actor testenterActorInput(String[] data) { return enterActorInput(data); }
+    public Director testenterDirectorInput(String[] data) { return enterDirectorInput(data); }
+    public Movie testenterMovieInput(String[] data) { return enterMovieInput(data); }
+    public <T> Map<Integer,List<Integer>>testaddItemToIdMap(String[] data, Map<Integer,List<Integer>> map, List<T> list, Function<T,Integer> getId){ return addItemToIdMap(data, map, list, getId); }
 }
+
+
+
+

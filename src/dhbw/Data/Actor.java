@@ -1,7 +1,7 @@
-package dbhw.Data;
+package dhbw.Data;
 
 public class Actor extends Person{
     public Actor(int id, String name) {
-        super(id, name, Role.ACTOR);
+        super(id, name);
     }
 }

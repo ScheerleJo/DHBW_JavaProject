@@ -1,4 +1,4 @@
-package dbhw.Data;
+package dhbw.Data;
 
 public class Movie {
     private int id;
@@ -8,8 +8,6 @@ public class Movie {
     private String published;
     private int votes;
     private double imdbRating;
-    /*private List<Integer> actors = new ArrayList<>();
-    private List<Integer> directors = new ArrayList<>();*/
 
     public Movie(int id, String title, String plot, String genre, String published, int votes, double imdbRating) {
         this.id = id;
@@ -21,13 +19,28 @@ public class Movie {
         this.imdbRating = imdbRating;
     }
 
-    /*public void setActors(List<Integer> actors) {
-        this.actors = actors;
+    public void setId(int id) {
+        this.id = id;
     }
-    public void setDirectors(List<Integer> directors) {
-        this.directors = directors;
+    public void setTitle(String title) {
+        this.title = title;
     }
-*/
+    public void setPlot(String plot) {
+        this.plot = plot;
+    }
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+    public void setPublished(String published) {
+        this.published = published;
+    }
+    public void setImdbRating(double imdbRating) {
+        this.imdbRating = imdbRating;
+    }
+    public void setVotes(int votes) {
+        this.votes = votes;
+    }
+
     public int getId() {
         return id;
     }
@@ -49,12 +62,4 @@ public class Movie {
     public int getVotes() {
         return votes;
     }
-    /*public List<Integer> getActors() {
-        return actors;
-    }
-    public List<Integer> getDirectors() {
-        return directors;
-    }
-*/
-
 }
